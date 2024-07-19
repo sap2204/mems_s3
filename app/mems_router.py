@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.dao import BaseDAO
+from app.schema import SAddMem
 
 
 router = APIRouter(
@@ -23,9 +24,9 @@ async def get_mem_by_id(id: int):
 
 
 @router.post("")
-async def add_new_mem():
+async def add_new_mem(name: str, url: str):
     """"Function for add a new mem"""
-    pass
+    await BaseDAO.add_mem(name=name, url=url)
 
 
 @router.put("/{id}")
