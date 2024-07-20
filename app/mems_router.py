@@ -24,16 +24,20 @@ async def get_mem_by_id(id: int):
     return await BaseDAO.get_mem_by_id(id)
 
 
-@router.post("")
-async def add_new_mem(name: str, url: str):
-    """"Function for add a new mem"""
-    await BaseDAO.add_mem(name=name, url=url)
 
-
-@router.post("/foto", status_code=201)
+@router.post("/add_mem", status_code=201)
 async def add_mem(upload_file: UploadFile):
+    """Function for add mem in s3-storage and DB"""
+    
     file =  await upload_file.read() # reading file for loading it in s3 storage
-    await s3_client.upload_file(file, upload_file.filename)
+    await s3_client.upload_file(file, upload_file.filename) # add file in s3-storage
+
+    # URL file from s3-storage
+    url = f"https://98508f70-8b19-40be-83a5-86249d08e148.selstorage.ru/{upload_file.filename}"
+
+    # add mem in DB whith name and url from s3-storage
+    await BaseDAO.add_mem(name=upload_file.filename, url=url)
+
     
 
 
