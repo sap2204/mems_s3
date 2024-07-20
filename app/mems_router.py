@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile
 
 from app.dao import BaseDAO
-from app.schema import SAddMem
+from app.s3_storage import s3_client
+
 
 
 router = APIRouter(
@@ -29,10 +30,11 @@ async def add_new_mem(name: str, url: str):
     await BaseDAO.add_mem(name=name, url=url)
 
 
-@router.put("/{id}")
-async def update_mem(id: int):
-    """Function for update mem"""
-    pass
+@router.post("/foto", status_code=201)
+async def add_mem(upload_file: UploadFile):
+    file =  await upload_file.read() # reading file for loading it in s3 storage
+    await s3_client.upload_file(file, upload_file.filename)
+    
 
 
 @router.delete("{id}")
